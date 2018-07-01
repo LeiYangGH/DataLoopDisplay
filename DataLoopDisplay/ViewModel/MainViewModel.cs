@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using System;
-using BarCheck;
 
 namespace DataLoopDisplay.ViewModel
 {
@@ -27,7 +26,7 @@ namespace DataLoopDisplay.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private SettingsReader appCfgsReader = new SettingsReader();
+        private SettingsReader settingsReader = new SettingsReader();
         private string excelFileName;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
         private int displayRowsPerLoop;
@@ -38,8 +37,8 @@ namespace DataLoopDisplay.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            this.excelFileName = this.appCfgsReader.GetExcelFileName();
-            this.displayRowsPerLoop = this.appCfgsReader.GetDisplayRowsPerLoop();
+            this.excelFileName = this.settingsReader.GetExcelFileName();
+            this.displayRowsPerLoop = this.settingsReader.GetDisplayRowsPerLoop();
 
             if (IsInDesignMode)
             {
@@ -52,6 +51,7 @@ namespace DataLoopDisplay.ViewModel
             }
             this.StartTimerShow();
             this.CreateFileWatcher(this.excelFileName);
+            this.DisplayFontSize = this.settingsReader.GetDisplayFontSize();
         }
 
         public void CreateFileWatcher(string excelFileName)
@@ -75,7 +75,7 @@ namespace DataLoopDisplay.ViewModel
         {
             this.loopCount = 0;
             ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
-            this.dispatcherTimer.Interval = this.appCfgsReader.GetDisplaySecondsPerLoop();
+            this.dispatcherTimer.Interval = this.settingsReader.GetDisplaySecondsPerLoop();
             this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             this.dispatcherTimer.Start();
         }
@@ -85,13 +85,14 @@ namespace DataLoopDisplay.ViewModel
         private void ShowLoop(DataTable all, int rowsper)
         {
             var rows = this.allrowsDataTable.Rows.OfType<DataRow>()
-    .Skip(loopCount * displayRowsPerLoop).Take(displayRowsPerLoop);
+                .Skip(loopCount * displayRowsPerLoop).Take(displayRowsPerLoop);
             DataTable dt = this.allrowsDataTable.Clone();
             foreach (DataRow row in rows)
                 dt.ImportRow(row);
             this.DataTableToDisplay = dt;
             this.loopCount++;
-            if (this.loopCount >= this.allrowsDataTable.Rows.Count / this.displayRowsPerLoop)
+            if (this.loopCount >=
+                this.allrowsDataTable.Rows.Count / this.displayRowsPerLoop)
                 this.loopCount = 0;
         }
 
@@ -109,6 +110,16 @@ namespace DataLoopDisplay.ViewModel
             }
         }
 
+        private void ReportDataTableRowColumnsCount(string excelFileName, DataTable dt)
+        {
+            int rowcnt = dt.Rows.Count;
+            int colcnt = dt.Columns.Count;
+            string msg = string.Format("{0},{1}ÐÐ,{2}ÁÐ",
+                excelFileName, rowcnt, colcnt);
+            this.Message = msg;
+            Log.Instance.Logger.InfoFormat("msg");
+        }
+
         private DataTable ReadExcelToDataTable()
         {
             if (!File.Exists(this.excelFileName))
@@ -120,7 +131,8 @@ namespace DataLoopDisplay.ViewModel
             }
 
             DataTable dt = ExcelDataReader.ReadToDataTable(this.excelFileName);
-            this.FilterDataTableColumns(dt, this.appCfgsReader.GetDisplayColumnIndexes());
+            this.ReportDataTableRowColumnsCount(this.excelFileName, dt);
+            this.FilterDataTableColumns(dt, this.settingsReader.GetDisplayColumnIndexes());
             return dt;
         }
 
@@ -156,6 +168,40 @@ namespace DataLoopDisplay.ViewModel
                 {
                     this.dataTableToDisplay = value;
                     this.RaisePropertyChanged(nameof(DataTableToDisplay));
+                }
+            }
+        }
+
+        private string message;
+        public string Message
+        {
+            get
+            {
+                return this.message;
+            }
+            set
+            {
+                if (this.message != value)
+                {
+                    this.message = value;
+                    this.RaisePropertyChanged(nameof(Message));
+                }
+            }
+        }
+
+        private int displayFontSize;
+        public int DisplayFontSize
+        {
+            get
+            {
+                return this.displayFontSize;
+            }
+            set
+            {
+                if (this.displayFontSize != value)
+                {
+                    this.displayFontSize = value;
+                    this.RaisePropertyChanged(nameof(DisplayFontSize));
                 }
             }
         }

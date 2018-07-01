@@ -6,6 +6,8 @@
         public const string Settings_Key_DisplayRowsPerLoop = "每次显示行数";
         public const string Settings_Key_DisplaySecondsPerLoop = "每次显示秒数";
         public const string Settings_Key_DisplayColumnIndexes = "显示列下标";
+        public const string Settings_Key_DisplayFontSize = "表格显示字号";
         public const string Settings_FileName = "settings.txt";
+        public const string Application_Name = "DataLoopDisplay";
     }
 }

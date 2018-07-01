@@ -9,7 +9,32 @@
         Title="数据展示" Height="450" Width="800"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
         <view:UCTableDisplay DataContext="{Binding DataTableToDisplay}"
+                             FontSize="{Binding ElementName=sliderFontSize,Path=Value,Mode=OneWay}"
                               />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Slider Name="sliderFontSize" 
+                                Minimum="8" Maximum="72" MinHeight="15"
+                                HorizontalAlignment="Stretch"  VerticalAlignment="Center"
+                                Value="{Binding DisplayFontSize,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></Slider>
+            <TextBox  Grid.Column="1"   IsReadOnly="True" MinWidth="20" MaxWidth="30"
+                  Text="{Binding ElementName=sliderFontSize,Path=Value,Mode=OneWay}"
+                  ></TextBox>
+        </Grid>
+
+
+        <TextBox  Grid.Row="2"   IsReadOnly="True" HorizontalAlignment="Stretch"
+                  Text="{Binding Message,Mode=OneWay}"
+                  ></TextBox>
     </Grid>
 </Window>
