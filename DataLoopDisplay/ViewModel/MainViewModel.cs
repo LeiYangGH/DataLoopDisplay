@@ -1,5 +1,6 @@
 using GalaSoft.MvvmLight;
 using System.Data;
+using ExcelReader;
 namespace DataLoopDisplay.ViewModel
 {
     /// <summary>
@@ -27,8 +28,16 @@ namespace DataLoopDisplay.ViewModel
             }
             else
             {
-                // Code runs "for real"
+                this.DataTableToDisplay = this.ReadExcelToDataTable();
+
             }
+        }
+
+
+        private DataTable ReadExcelToDataTable()
+        {
+            string excelFileName = AppCfgsReader.GetExcelFileName();
+            return ExcelDataReader.ReadToDataTable(excelFileName);
         }
 
         private DataTable createFakeDatatable()
