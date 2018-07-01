@@ -1,5 +1,5 @@
 using GalaSoft.MvvmLight;
-
+using System.Data;
 namespace DataLoopDisplay.ViewModel
 {
     /// <summary>
@@ -21,14 +21,50 @@ namespace DataLoopDisplay.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
+            if (IsInDesignMode)
+            {
+                this.DataTableToDisplay = this.createFakeDatatable();
+            }
+            else
+            {
+                // Code runs "for real"
+            }
+        }
+
+        private DataTable createFakeDatatable()
+        {
+            DataTable dt = new DataTable();
+            dt.Clear();
+            dt.Columns.Add("Name");
+            dt.Columns.Add("Marks");
+            DataRow ravi = dt.NewRow();
+            ravi["Name"] = "ravi";
+            ravi["Marks"] = "500";
+            dt.Rows.Add(ravi);
+
+            DataRow ly = dt.NewRow();
+            ly["Name"] = "leiyang";
+            ly["Marks"] = "1000";
+            dt.Rows.Add(ly);
+
+            return dt;
+        }
+
+        private DataTable dataTableToDisplay;
+        public DataTable DataTableToDisplay
+        {
+            get
+            {
+                return this.dataTableToDisplay;
+            }
+            set
+            {
+                if (this.dataTableToDisplay != value)
+                {
+                    this.dataTableToDisplay = value;
+                    this.RaisePropertyChanged(nameof(DataTableToDisplay));
+                }
+            }
         }
     }
 }
