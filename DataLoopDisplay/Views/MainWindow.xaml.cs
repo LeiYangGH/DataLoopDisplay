@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DataLoopDisplay
+namespace DataLoopDisplay.Views
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
