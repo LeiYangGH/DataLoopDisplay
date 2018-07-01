@@ -1,6 +1,10 @@
 using GalaSoft.MvvmLight;
 using System.Data;
 using ExcelReader;
+using System.IO;
+using System.Windows;
+using System.Collections.Generic;
+using System.Linq;
 namespace DataLoopDisplay.ViewModel
 {
     /// <summary>
@@ -33,11 +37,27 @@ namespace DataLoopDisplay.ViewModel
             }
         }
 
+        private void FilterDataTableColumns(DataTable dt, IList<int> cols)
+        {
+            IList<int> allColumnsIndexes = Enumerable.Range(0, dt.Columns.Count).ToList();
+            foreach (int i in (allColumnsIndexes.Except(cols)).OrderByDescending(x => x))
+            {
+                dt.Columns.RemoveAt(i);
+            }
+        }
 
         private DataTable ReadExcelToDataTable()
         {
             string excelFileName = AppCfgsReader.GetExcelFileName();
-            return ExcelDataReader.ReadToDataTable(excelFileName);
+            if (!File.Exists(excelFileName))
+            {
+                MessageBox.Show($"找不到文件{excelFileName}");
+                return new DataTable();
+            }
+
+            DataTable dt = ExcelDataReader.ReadToDataTable(excelFileName);
+            this.FilterDataTableColumns(dt, AppCfgsReader.GetDisplayColumnIndexes());
+            return dt;
         }
 
         private DataTable createFakeDatatable()
