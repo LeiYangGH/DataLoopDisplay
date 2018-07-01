@@ -26,7 +26,8 @@ namespace DataLoopDisplay.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private DispatcherTimer dispatcherTimer = null;
+        private string excelFileName = AppCfgsReader.GetExcelFileName();
+        private DispatcherTimer dispatcherTimer = new DispatcherTimer();
         private int displayRowsPerLoop = AppCfgsReader.GetDisplayRowsPerLoop();
         private DataTable allrowsDataTable = null;
 
@@ -44,13 +45,34 @@ namespace DataLoopDisplay.ViewModel
                 this.allrowsDataTable = this.ReadExcelToDataTable();
 
             }
+            this.StartTimerShow();
+            this.CreateFileWatcher(this.excelFileName);
+        }
+
+        public void CreateFileWatcher(string excelFileName)
+        {
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = Path.GetDirectoryName(excelFileName);
+            watcher.NotifyFilter = NotifyFilters.LastWrite;
+            watcher.Filter = Path.GetFileName(excelFileName);
+            watcher.Changed += new FileSystemEventHandler(OnChanged);
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private void OnChanged(object source, FileSystemEventArgs e)
+        {
+            this.dispatcherTimer.Tick -= new EventHandler(dispatcherTimer_Tick);
+            this.allrowsDataTable = this.ReadExcelToDataTable();
+            this.StartTimerShow();
+        }
+
+        private void StartTimerShow()
+        {
             ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
-            this.dispatcherTimer = new DispatcherTimer();
             this.dispatcherTimer.Interval = AppCfgsReader.GetDisplaySecondsPerLoop();
             this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             this.dispatcherTimer.Start();
         }
-
 
         private int loopCount = 0;
 
@@ -83,14 +105,13 @@ namespace DataLoopDisplay.ViewModel
 
         private DataTable ReadExcelToDataTable()
         {
-            string excelFileName = AppCfgsReader.GetExcelFileName();
-            if (!File.Exists(excelFileName))
+            if (!File.Exists(this.excelFileName))
             {
-                MessageBox.Show($"找不到文件{excelFileName}");
+                MessageBox.Show($"找不到文件{this.excelFileName}");
                 return new DataTable();
             }
 
-            DataTable dt = ExcelDataReader.ReadToDataTable(excelFileName);
+            DataTable dt = ExcelDataReader.ReadToDataTable(this.excelFileName);
             this.FilterDataTableColumns(dt, AppCfgsReader.GetDisplayColumnIndexes());
             return dt;
         }
