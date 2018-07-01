@@ -12,12 +12,24 @@ namespace DataLoopDisplay
     {
         public static string GetExcelFileName()
         {
-            return ConfigurationManager.AppSettings["excelfilename"];
+            return ConfigurationManager.AppSettings["Excel文件名"];
+        }
+
+        public static int GetDisplayRowsPerLoop()
+        {
+            string value = ConfigurationManager.AppSettings["每次显示行数"];
+            return Convert.ToInt32(value);
+        }
+
+        public static TimeSpan GetDisplaySecondsPerLoop()
+        {
+            string value = ConfigurationManager.AppSettings["每次显示秒数"];
+            return TimeSpan.FromSeconds(Convert.ToInt32(value));
         }
 
         public static IList<int> GetDisplayColumnIndexes()
         {
-            string displaycolumnindexes = ConfigurationManager.AppSettings["displaycolumnindexes"];
+            string displaycolumnindexes = ConfigurationManager.AppSettings["显示列下标"];
             return GetColumnsIndexesFromConfig(displaycolumnindexes);
         }
 

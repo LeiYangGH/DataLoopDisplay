@@ -5,8 +5,13 @@ using System.IO;
 using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
+using System;
+
 namespace DataLoopDisplay.ViewModel
 {
+
+
     /// <summary>
     /// This class contains properties that the main View can data bind to.
     /// <para>
@@ -21,6 +26,10 @@ namespace DataLoopDisplay.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private DispatcherTimer dispatcherTimer = null;
+        private int displayRowsPerLoop = AppCfgsReader.GetDisplayRowsPerLoop();
+        private DataTable allrowsDataTable = null;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -32,9 +41,35 @@ namespace DataLoopDisplay.ViewModel
             }
             else
             {
-                this.DataTableToDisplay = this.ReadExcelToDataTable();
+                this.allrowsDataTable = this.ReadExcelToDataTable();
 
             }
+            ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
+            this.dispatcherTimer = new DispatcherTimer();
+            this.dispatcherTimer.Interval = AppCfgsReader.GetDisplaySecondsPerLoop();
+            this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            this.dispatcherTimer.Start();
+        }
+
+
+        private int loopCount = 0;
+
+        private void ShowLoop(DataTable all, int rowsper)
+        {
+            var rows = this.allrowsDataTable.Rows.OfType<DataRow>()
+    .Skip(loopCount * displayRowsPerLoop).Take(displayRowsPerLoop);
+            DataTable dt = this.allrowsDataTable.Clone();
+            foreach (DataRow row in rows)
+                dt.ImportRow(row);
+            this.DataTableToDisplay = dt;
+            this.loopCount++;
+            if (this.loopCount >= this.allrowsDataTable.Rows.Count / this.displayRowsPerLoop)
+                this.loopCount = 0;
+        }
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
         }
 
         private void FilterDataTableColumns(DataTable dt, IList<int> cols)
