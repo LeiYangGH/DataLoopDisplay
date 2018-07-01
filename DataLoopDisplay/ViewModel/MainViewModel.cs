@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using System;
+using BarCheck;
 
 namespace DataLoopDisplay.ViewModel
 {
@@ -26,10 +27,10 @@ namespace DataLoopDisplay.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private AppCfgsReader appCfgsReader = new AppCfgsReader();
-        private string excelFileName;// = appCfgsReader.GetExcelFileName();
+        private SettingsReader appCfgsReader = new SettingsReader();
+        private string excelFileName;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        private int displayRowsPerLoop;// = appCfgsReader.GetDisplayRowsPerLoop();
+        private int displayRowsPerLoop;
         private DataTable allrowsDataTable = null;
 
         /// <summary>
@@ -112,7 +113,9 @@ namespace DataLoopDisplay.ViewModel
         {
             if (!File.Exists(this.excelFileName))
             {
-                MessageBox.Show($"找不到文件{this.excelFileName}");
+                string msg = $"找不到Excel文件{this.excelFileName}";
+                MessageBox.Show(msg);
+                Log.Instance.Logger.Error(msg);
                 return new DataTable();
             }
 

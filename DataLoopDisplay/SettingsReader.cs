@@ -10,12 +10,12 @@ using System.Windows;
 
 namespace DataLoopDisplay
 {
-    class AppCfgsReader
+    class SettingsReader
     {
         private string allSettingsContent;
-        public AppCfgsReader()
+        public SettingsReader()
         {
-            string settingFileName = "settings.txt";
+            string settingFileName = Constants.Settings_FileName;
             if (!File.Exists(settingFileName))
             {
                 MessageBox.Show($"找不到文件{settingFileName}");
@@ -40,28 +40,24 @@ namespace DataLoopDisplay
 
         public string GetExcelFileName()
         {
-            //return ConfigurationManager.AppSettings["Excel文件名"];
-            return this.GetValueFromKey("Excel文件名");
+            return this.GetValueFromKey(Constants.Settings_Key_ExcelFileName);
         }
 
         public int GetDisplayRowsPerLoop()
         {
-            //string value = ConfigurationManager.AppSettings["每次显示行数"];
-            string value = this.GetValueFromKey("每次显示行数");
+            string value = this.GetValueFromKey(Constants.Settings_Key_DisplayRowsPerLoop);
             return Convert.ToInt32(value);
         }
 
         public TimeSpan GetDisplaySecondsPerLoop()
         {
-            //string value = ConfigurationManager.AppSettings["每次显示秒数"];
-            string value = this.GetValueFromKey("每次显示秒数");
+            string value = this.GetValueFromKey(Constants.Settings_Key_DisplaySecondsPerLoop);
             return TimeSpan.FromSeconds(Convert.ToInt32(value));
         }
 
         public IList<int> GetDisplayColumnIndexes()
         {
-            //string displaycolumnindexes = ConfigurationManager.AppSettings["显示列下标"];
-            string displaycolumnindexes = this.GetValueFromKey("显示列下标");
+            string displaycolumnindexes = this.GetValueFromKey(Constants.Settings_Key_DisplayColumnIndexes);
             return GetColumnsIndexesFromConfig(displaycolumnindexes);
         }
 

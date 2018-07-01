@@ -1,4 +1,4 @@
-﻿Excel文件名:C:/zxm/DataDisplay/测试 Microsoft Excel 工作表.xlsx
+﻿Excel文件名:C:/zxm/DataDisplay/test.xlsx
 显示列下标:2,4
 每次显示行数:10
 每次显示秒数:2
