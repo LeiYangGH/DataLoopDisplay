@@ -24,5 +24,14 @@ namespace DataLoopDisplay.Views
         {
             InitializeComponent();
         }
+
+        private void gridTable_Loaded(object sender, RoutedEventArgs e)
+        {
+                //foreach (var column in this.gridTable.Columns)
+                //{
+                //    column.MinWidth = column.ActualWidth;
+                //    column.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
+                //}
+        }
     }
 }

@@ -10,6 +10,7 @@
         Title="MainWindow" Height="450" Width="800"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid>
-        <view:UCTableDisplay DataContext="{Binding DataTableToDisplay}"/>
+        <view:UCTableDisplay DataContext="{Binding DataTableToDisplay}"
+                              />
     </Grid>
 </Window>
