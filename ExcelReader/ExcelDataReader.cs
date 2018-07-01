@@ -14,7 +14,7 @@ namespace ExcelReader
         {
 
             DataTable dt = new DataTable();
-            string connStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:/zxm/DataDisplay/测试 Microsoft Excel 工作表.xlsx;Extended Properties=\"Excel 12.0;HDR=YES;IMEX=1\"";
+            string connStr =string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=\"Excel 12.0;HDR=YES;IMEX=1\"",fileName);
             string sql = "Select * From [Sheet1$]";
             using (OleDbDataAdapter da = new OleDbDataAdapter(sql, connStr))
             {

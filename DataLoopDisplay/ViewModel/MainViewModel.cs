@@ -26,9 +26,10 @@ namespace DataLoopDisplay.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private string excelFileName = AppCfgsReader.GetExcelFileName();
+        private AppCfgsReader appCfgsReader = new AppCfgsReader();
+        private string excelFileName;// = appCfgsReader.GetExcelFileName();
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        private int displayRowsPerLoop = AppCfgsReader.GetDisplayRowsPerLoop();
+        private int displayRowsPerLoop;// = appCfgsReader.GetDisplayRowsPerLoop();
         private DataTable allrowsDataTable = null;
 
         /// <summary>
@@ -36,6 +37,9 @@ namespace DataLoopDisplay.ViewModel
         /// </summary>
         public MainViewModel()
         {
+            this.excelFileName = this.appCfgsReader.GetExcelFileName();
+            this.displayRowsPerLoop = this.appCfgsReader.GetDisplayRowsPerLoop();
+
             if (IsInDesignMode)
             {
                 this.DataTableToDisplay = this.createFakeDatatable();
@@ -68,8 +72,9 @@ namespace DataLoopDisplay.ViewModel
 
         private void StartTimerShow()
         {
+            this.loopCount = 0;
             ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
-            this.dispatcherTimer.Interval = AppCfgsReader.GetDisplaySecondsPerLoop();
+            this.dispatcherTimer.Interval = this.appCfgsReader.GetDisplaySecondsPerLoop();
             this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             this.dispatcherTimer.Start();
         }
@@ -112,7 +117,7 @@ namespace DataLoopDisplay.ViewModel
             }
 
             DataTable dt = ExcelDataReader.ReadToDataTable(this.excelFileName);
-            this.FilterDataTableColumns(dt, AppCfgsReader.GetDisplayColumnIndexes());
+            this.FilterDataTableColumns(dt, this.appCfgsReader.GetDisplayColumnIndexes());
             return dt;
         }
 
