@@ -64,37 +64,16 @@ namespace DataLoopDisplay
             return this.GetValueFromKey(Constants.Settings_Key_ExcelFileName);
         }
 
-        public int GetDisplayFontSize()
+     
+
+        public int GetDisplaySecondsPerPage()
         {
-            return this.GetValueAsIntFromKey(Constants.Settings_Key_DisplayFontSize);
+            return this.GetValueAsIntFromKey(Constants.Settings_Key_DisplaySecondsPerPage);
         }
 
-        public int GetDisplayRowsPerLoop()
-        {
-            return this.GetValueAsIntFromKey(Constants.Settings_Key_DisplayRowsPerLoop);
-        }
+        
 
-        public TimeSpan GetDisplaySecondsPerLoop()
-        {
-            int value = this.GetValueAsIntFromKey(Constants.Settings_Key_DisplaySecondsPerLoop);
-            return TimeSpan.FromSeconds(Convert.ToInt32(value));
-        }
-
-        public IList<int> GetDisplayColumnIndexes()
-        {
-            string displaycolumnindexes = this.GetValueFromKey(Constants.Settings_Key_DisplayColumnIndexes);
-            return GetColumnsIndexesFromConfig(displaycolumnindexes);
-        }
-
-        private IList<int> GetColumnsIndexesFromConfig(string displaycolumnindexes)
-        {
-            Regex reg = new Regex(@"\d+");
-            List<int> cols = new List<int>();
-            foreach (Match m in reg.Matches(displaycolumnindexes))
-            {
-                cols.Add(Convert.ToInt32(m.Groups[0].Value) - 1);
-            }
-            return cols;
-        }
+         
+        
     }
 }

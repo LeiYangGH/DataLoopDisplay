@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using System;
+using ExcelPdfJpg;
 
 namespace DataLoopDisplay.ViewModel
 {
@@ -38,21 +39,44 @@ namespace DataLoopDisplay.ViewModel
         public MainViewModel()
         {
             this.excelFileName = this.settingsReader.GetExcelFileName();
-            this.displayRowsPerLoop = this.settingsReader.GetDisplayRowsPerLoop();
 
             if (IsInDesignMode)
             {
-                this.DataTableToDisplay = this.createFakeDatatable();
+                //this.DataTableToDisplay = this.createFakeDatatable();
+                //this.ImageFileName = @"C:\Users\LeiYang\Downloads\j01.jpg";
             }
             else
             {
-                this.allrowsDataTable = this.ReadExcelToDataTable();
+                //this.allrowsDataTable = this.ReadExcelToDataTable();
+                //this.ImageFileName = @"C:\Users\LeiYang\Downloads\j01.jpg";
+                this.LoopViewExcel(this.excelFileName);
 
             }
-            this.StartTimerShow();
+            //this.StartTimerShow();
             this.CreateFileWatcher(this.excelFileName);
-            this.DisplayFontSize = this.settingsReader.GetDisplayFontSize();
+            //this.DisplayFontSize = this.settingsReader.GetDisplayFontSize();
         }
+
+        public string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
+        }
+
+        public void LoopViewExcel(string excelFileName)
+        {
+            this.Message = $"正在转换{excelFileName}...";
+            string tempFolder = this.GetTemporaryDirectory();
+            string tempExcelFile = Path.Combine(tempFolder, Path.GetFileName(excelFileName));
+            File.Copy(excelFileName, tempExcelFile);
+            string pdf = Excel2Pdf.Convert(tempExcelFile);
+            this.Message = $"正在转换{pdf}...";
+            string jpg = Pdf2Jpg.Convert(pdf);
+            this.Message = $"正在显示{jpg}...";
+            this.ImageFileName = jpg;
+        }
+
 
         public void CreateFileWatcher(string excelFileName)
         {
@@ -66,108 +90,32 @@ namespace DataLoopDisplay.ViewModel
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
-            this.dispatcherTimer.Tick -= new EventHandler(dispatcherTimer_Tick);
-            this.allrowsDataTable = this.ReadExcelToDataTable();
-            this.StartTimerShow();
+ 
+            this.LoopViewExcel(this.excelFileName);
         }
 
-        private void StartTimerShow()
-        {
-            this.loopCount = 0;
-            ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
-            this.dispatcherTimer.Interval = this.settingsReader.GetDisplaySecondsPerLoop();
-            this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            this.dispatcherTimer.Start();
-        }
+        
 
-        private int loopCount = 0;
+      
 
-        private void ShowLoop(DataTable all, int rowsper)
-        {
-            var rows = this.allrowsDataTable.Rows.OfType<DataRow>()
-                .Skip(loopCount * displayRowsPerLoop).Take(displayRowsPerLoop);
-            DataTable dt = this.allrowsDataTable.Clone();
-            foreach (DataRow row in rows)
-                dt.ImportRow(row);
-            this.DataTableToDisplay = dt;
-            this.loopCount++;
-            if (this.loopCount >=
-                this.allrowsDataTable.Rows.Count / this.displayRowsPerLoop)
-                this.loopCount = 0;
-        }
+        
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e)
-        {
-            ShowLoop(this.allrowsDataTable, this.displayRowsPerLoop);
-        }
+       
+      
 
-        private void FilterDataTableColumns(DataTable dt, IList<int> cols)
-        {
-            IList<int> allColumnsIndexes = Enumerable.Range(0, dt.Columns.Count).ToList();
-            foreach (int i in (allColumnsIndexes.Except(cols)).OrderByDescending(x => x))
-            {
-                dt.Columns.RemoveAt(i);
-            }
-        }
-
-        private void ReportDataTableRowColumnsCount(string excelFileName, DataTable dt)
-        {
-            int rowcnt = dt.Rows.Count;
-            int colcnt = dt.Columns.Count;
-            string msg = string.Format("{0},{1}行,{2}列",
-                excelFileName, rowcnt, colcnt);
-            this.Message = msg;
-            Log.Instance.Logger.InfoFormat("msg");
-        }
-
-        private DataTable ReadExcelToDataTable()
-        {
-            if (!File.Exists(this.excelFileName))
-            {
-                string msg = $"找不到Excel文件{this.excelFileName}";
-                MessageBox.Show(msg);
-                Log.Instance.Logger.Error(msg);
-                return new DataTable();
-            }
-
-            DataTable dt = ExcelDataReader.ReadToDataTable(this.excelFileName);
-            this.ReportDataTableRowColumnsCount(this.excelFileName, dt);
-            this.FilterDataTableColumns(dt, this.settingsReader.GetDisplayColumnIndexes());
-            return dt;
-        }
-
-        private DataTable createFakeDatatable()
-        {
-            DataTable dt = new DataTable();
-            dt.Clear();
-            dt.Columns.Add("Name");
-            dt.Columns.Add("Marks");
-            DataRow ravi = dt.NewRow();
-            ravi["Name"] = "ravi";
-            ravi["Marks"] = "500";
-            dt.Rows.Add(ravi);
-
-            DataRow ly = dt.NewRow();
-            ly["Name"] = "leiyang";
-            ly["Marks"] = "1000";
-            dt.Rows.Add(ly);
-
-            return dt;
-        }
-
-        private DataTable dataTableToDisplay;
-        public DataTable DataTableToDisplay
+        private string imageFileName;
+        public string ImageFileName
         {
             get
             {
-                return this.dataTableToDisplay;
+                return this.imageFileName;
             }
             set
             {
-                if (this.dataTableToDisplay != value)
+                if (this.imageFileName != value)
                 {
-                    this.dataTableToDisplay = value;
-                    this.RaisePropertyChanged(nameof(DataTableToDisplay));
+                    this.imageFileName = value;
+                    this.RaisePropertyChanged(nameof(ImageFileName));
                 }
             }
         }
@@ -188,22 +136,6 @@ namespace DataLoopDisplay.ViewModel
                 }
             }
         }
-
-        private int displayFontSize;
-        public int DisplayFontSize
-        {
-            get
-            {
-                return this.displayFontSize;
-            }
-            set
-            {
-                if (this.displayFontSize != value)
-                {
-                    this.displayFontSize = value;
-                    this.RaisePropertyChanged(nameof(DisplayFontSize));
-                }
-            }
-        }
+ 
     }
 }

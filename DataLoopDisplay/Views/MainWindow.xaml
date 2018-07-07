@@ -7,6 +7,7 @@
         xmlns:view="clr-namespace:DataLoopDisplay.Views"
         mc:Ignorable="d"
         Title="数据展示" Height="450" Width="800"
+        WindowState="Maximized"
         DataContext="{Binding Main, Source={StaticResource Locator}}">
     <Grid>
         <Grid.RowDefinitions>
@@ -14,8 +15,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <view:UCTableDisplay DataContext="{Binding DataTableToDisplay}"
-                             FontSize="{Binding ElementName=sliderFontSize,Path=Value,Mode=OneWay}"
+        <view:UCTableDisplay DataContext="{Binding}"
                               />
 
         <Grid Grid.Row="1">

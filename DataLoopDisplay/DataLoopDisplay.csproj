@@ -76,6 +76,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Views\ScrollAnimationBehavior.cs" />
     <Compile Include="Views\UCTableDisplay.xaml.cs">
       <DependentUpon>UCTableDisplay.xaml</DependentUpon>
     </Compile>
@@ -127,6 +128,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ExcelPdfJpg\ExcelPdfJpg.csproj">
+      <Project>{92a398cd-4c6c-4b36-9e18-b287b19d8254}</Project>
+      <Name>ExcelPdfJpg</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExcelReader\ExcelReader.csproj">
       <Project>{ff72e758-e03c-4e8e-b4d5-7fdaa9f3eeb6}</Project>
       <Name>ExcelReader</Name>
