@@ -8,7 +8,10 @@ using System.Linq;
 using System.Windows.Threading;
 using System;
 using ExcelPdfJpg;
-
+using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using DataLoopDisplay.Views;
 namespace DataLoopDisplay.ViewModel
 {
 
@@ -50,7 +53,6 @@ namespace DataLoopDisplay.ViewModel
                 //this.allrowsDataTable = this.ReadExcelToDataTable();
                 //this.ImageFileName = @"C:\Users\LeiYang\Downloads\j01.jpg";
                 this.LoopViewExcel(this.excelFileName);
-
             }
             //this.StartTimerShow();
             this.CreateFileWatcher(this.excelFileName);
@@ -64,17 +66,32 @@ namespace DataLoopDisplay.ViewModel
             return tempDirectory;
         }
 
-        public void LoopViewExcel(string excelFileName)
+        public async Task LoopViewExcel(string excelFileName)
         {
-            this.Message = $"正在转换{excelFileName}...";
-            string tempFolder = this.GetTemporaryDirectory();
-            string tempExcelFile = Path.Combine(tempFolder, Path.GetFileName(excelFileName));
-            File.Copy(excelFileName, tempExcelFile);
-            string pdf = Excel2Pdf.Convert(tempExcelFile);
-            this.Message = $"正在转换{pdf}...";
-            string jpg = Pdf2Jpg.Convert(pdf);
-            this.Message = $"正在显示{jpg}...";
-            this.ImageFileName = jpg;
+            string jpg = null;
+            await Task.Run(() =>
+            {
+                this.Message = $"正在转换{excelFileName}...";
+                string tempFolder = this.GetTemporaryDirectory();
+                string tempExcelFile = Path.Combine(tempFolder, Path.GetFileName(excelFileName));
+                File.Copy(excelFileName, tempExcelFile);
+                string pdf = Excel2Pdf.Convert(tempExcelFile);
+                this.Message = $"正在转换{pdf}...";
+                jpg = Pdf2Jpg.Convert(pdf);
+                this.Message = $"正在显示{jpg}...";
+                this.ImageFileName = jpg;
+                //if (App.Current != null)//walkaround
+                //    App.Current.Dispatcher.BeginInvoke(new Action(
+                //        () =>
+                //        {
+                //            this.SetMovieSource(jpg);
+                //        }));
+                this.Message = $"当前显示{excelFileName}！";
+                BitmapImage bmp = new BitmapImage(new Uri(this.ImageFileName));
+                
+                MainWindow.mainWindow.ucTableDisplay.Animate(bmp.Height);
+            });
+
         }
 
 
@@ -90,18 +107,37 @@ namespace DataLoopDisplay.ViewModel
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
- 
+
             this.LoopViewExcel(this.excelFileName);
         }
 
-        
+        void SetMovieSource(string path)
+        {
 
-      
+            var myImage = new BitmapImage();
+            myImage.BeginInit();
+            myImage.UriSource = new Uri(path);
+            myImage.EndInit();
+            this.MovieImageSource = myImage;
+        }
 
-        
+        private ImageSource movieImageSource;
 
-       
-      
+        public ImageSource MovieImageSource
+        {
+            get
+            {
+                return this.movieImageSource;
+            }
+            set
+            {
+                if (this.movieImageSource != value)
+                {
+                    this.movieImageSource = value;
+                    this.RaisePropertyChanged(nameof(MovieImageSource));
+                }
+            }
+        }
 
         private string imageFileName;
         public string ImageFileName
@@ -136,6 +172,6 @@ namespace DataLoopDisplay.ViewModel
                 }
             }
         }
- 
+
     }
 }

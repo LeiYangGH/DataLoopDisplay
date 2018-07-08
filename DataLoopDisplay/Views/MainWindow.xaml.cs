@@ -20,9 +20,11 @@ namespace DataLoopDisplay.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow mainWindow;
         public MainWindow()
         {
             InitializeComponent();
+            MainWindow.mainWindow = this;
         }
     }
 }

@@ -15,7 +15,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <view:UCTableDisplay DataContext="{Binding}"
+        <view:UCTableDisplay x:Name="ucTableDisplay" DataContext="{Binding}"
                               />
 
         <Grid Grid.Row="1">
@@ -23,7 +23,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Slider Name="sliderFontSize" 
+            <Slider Visibility="Hidden" Name="sliderFontSize" 
                                 Minimum="8" Maximum="72" MinHeight="15"
                                 HorizontalAlignment="Stretch"  VerticalAlignment="Center"
                                 Value="{Binding DisplayFontSize,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></Slider>

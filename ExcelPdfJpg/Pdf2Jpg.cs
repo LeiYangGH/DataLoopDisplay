@@ -1,10 +1,11 @@
-﻿using PdfPrintingNet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PdfiumViewer;
+using System.Drawing.Imaging;
 
 namespace ExcelPdfJpg
 {
@@ -12,14 +13,21 @@ namespace ExcelPdfJpg
     {
         public static string Convert(string pdfFileName)
         {
-            PdfPrint p = new PdfPrint(pdfFileName, "");
-            string jpgFileName = Path.ChangeExtension(pdfFileName, ".jpg"); ;
-            p.SavePdfPagesAsImages(pdfFileName, jpgFileName);
-            string[] jpgFiles = Directory.GetFiles(Path.GetDirectoryName(jpgFileName), "*.jpg");
-            if (jpgFiles != null && jpgFiles.Length > 0)
-                return jpgFiles[0];
-            else
+            try
+            {
+                using (var document = PdfDocument.Load(pdfFileName))
+                {
+                    var image = document.Render(0, 300, 300, true);//300
+                    var img = Path.ChangeExtension(pdfFileName, "png");
+                    image.Save(img, ImageFormat.Png);
+                    return img;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
                 return null;
+            }
         }
     }
 }

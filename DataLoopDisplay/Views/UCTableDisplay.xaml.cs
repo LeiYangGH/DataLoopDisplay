@@ -29,18 +29,14 @@ namespace DataLoopDisplay.Views
             this.displaySecondsPerPage = this.settingsReader.GetDisplaySecondsPerPage();
         }
 
-        private void gridTable_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Animate();
-        }
-
-        private void Animate()
+        public void Animate(double height)
         {
             scrollViewer.BeginAnimation(ScrollAnimationBehavior.VerticalOffsetProperty, null);
             DoubleAnimation verticalAnimation = new DoubleAnimation();
 
             verticalAnimation.From = scrollViewer.VerticalOffset;
-            verticalAnimation.To = scrollViewer.ScrollableHeight;
+            //verticalAnimation.To = scrollViewer.ActualHeight;
+            verticalAnimation.To = height;
             verticalAnimation.Duration = new Duration(TimeSpan.FromSeconds(this.displaySecondsPerPage));
             verticalAnimation.RepeatBehavior = RepeatBehavior.Forever;
             Storyboard storyboard = new Storyboard();
@@ -52,9 +48,25 @@ namespace DataLoopDisplay.Views
             storyboard.Begin();
         }
 
+        private void gridTable_Loaded(object sender, RoutedEventArgs e)
+        {
+            //this.Animate();
+        }
+
         private void scrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.Animate();
+            //this.Animate();
+        }
+
+        private void image1_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            
+        }
+
+
+        private void image1_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            //this.Animate();
         }
     }
 }
