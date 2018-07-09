@@ -1,3 +1,4 @@
 ﻿Excel文件名:C:/zxm/DataDisplay/test.xlsx
-每页显示秒数:5
+每次滚动间隔秒数:5
+每次滚动高度:1
 

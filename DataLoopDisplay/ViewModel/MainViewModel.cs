@@ -34,9 +34,9 @@ namespace DataLoopDisplay.ViewModel
     {
         private SettingsReader settingsReader = new SettingsReader();
         private string excelFileName;
+        private TimeSpan secondsPerDown;
+        private int heightPerDown;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        private int displayRowsPerLoop;
-        private DataTable allrowsDataTable = null;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -44,19 +44,19 @@ namespace DataLoopDisplay.ViewModel
         public MainViewModel()
         {
             this.excelFileName = this.settingsReader.GetExcelFileName();
+            this.secondsPerDown = this.settingsReader.GetSecondsPerDown();
+            this.heightPerDown = this.settingsReader.GetHeightPerDown();
 
             if (IsInDesignMode)
             {
-                
+
             }
             else
             {
-               
-                this.LoopViewExcel(this.excelFileName);
+                this.ConvertAndShowExcel(this.excelFileName);
             }
-            //this.StartTimerShow();
+            this.StartTimerShow();
             this.CreateFileWatcher(this.excelFileName);
-            //this.DisplayFontSize = this.settingsReader.GetDisplayFontSize();
         }
 
         public string GetTemporaryDirectory()
@@ -66,7 +66,7 @@ namespace DataLoopDisplay.ViewModel
             return tempDirectory;
         }
 
-        public async Task LoopViewExcel(string excelFileName)
+        public async Task ConvertAndShowExcel(string excelFileName)
         {
             await Task.Run(() =>
             {
@@ -77,8 +77,7 @@ namespace DataLoopDisplay.ViewModel
                 string xps = ExcelToXpsConverter.Convert(tempExcelFile);
 
                 this.Message = $"ÕýÔÚÏÔÊ¾{xps}...";
-                //this.ImageFileName = jpg;
-                if (App.Current != null)//walkaround
+                if (App.Current != null)
                     App.Current.Dispatcher.BeginInvoke(new Action(
                         () =>
                         {
@@ -104,54 +103,33 @@ namespace DataLoopDisplay.ViewModel
 
         private void OnChanged(object source, FileSystemEventArgs e)
         {
+            this.dispatcherTimer.Tick -= new EventHandler(dispatcherTimer_Tick);
+            this.ConvertAndShowExcel(this.excelFileName);
 
-            this.LoopViewExcel(this.excelFileName);
         }
 
-        void SetMovieSource(string path)
+        private void StartTimerShow()
         {
-
-            var myImage = new BitmapImage();
-            myImage.BeginInit();
-            myImage.UriSource = new Uri(path);
-            myImage.EndInit();
-            this.MovieImageSource = myImage;
+            this.dispatcherTimer.Interval = this.settingsReader.GetSecondsPerDown();
+            this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            this.dispatcherTimer.Start();
         }
 
-        private ImageSource movieImageSource;
 
-        public ImageSource MovieImageSource
+
+
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            get
-            {
-                return this.movieImageSource;
-            }
-            set
-            {
-                if (this.movieImageSource != value)
-                {
-                    this.movieImageSource = value;
-                    this.RaisePropertyChanged(nameof(MovieImageSource));
-                }
-            }
+            var docViewer = MainWindow.mainWindow.docViewer;
+            if (docViewer.VerticalOffset < docViewer.ViewportHeight - this.heightPerDown)
+                docViewer.VerticalOffset += this.heightPerDown;
+            else
+                docViewer.VerticalOffset = 0;
         }
 
-        private string imageFileName;
-        public string ImageFileName
-        {
-            get
-            {
-                return this.imageFileName;
-            }
-            set
-            {
-                if (this.imageFileName != value)
-                {
-                    this.imageFileName = value;
-                    this.RaisePropertyChanged(nameof(ImageFileName));
-                }
-            }
-        }
+
+
+
 
         private string message;
         public string Message

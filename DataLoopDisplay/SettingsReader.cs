@@ -64,16 +64,22 @@ namespace DataLoopDisplay
             return this.GetValueFromKey(Constants.Settings_Key_ExcelFileName);
         }
 
-     
-
-        public int GetDisplaySecondsPerPage()
+        public TimeSpan GetSecondsPerDown()
         {
-            return this.GetValueAsIntFromKey(Constants.Settings_Key_DisplaySecondsPerPage);
+            return TimeSpan.FromSeconds(this.GetValueAsIntFromKey(Constants.Settings_Key_SecondsPerDown));
         }
 
-        
+        public int GetHeightPerDown()
+        {
+            return this.GetValueAsIntFromKey(Constants.Settings_Key_HeightPerDown);
+        }
 
-         
-        
+
+
+
+
+
+
+
     }
 }
