@@ -48,6 +48,7 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -128,19 +129,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExcelPdfJpg\ExcelPdfJpg.csproj">
-      <Project>{92a398cd-4c6c-4b36-9e18-b287b19d8254}</Project>
-      <Name>ExcelPdfJpg</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ExcelReader\ExcelReader.csproj">
-      <Project>{ff72e758-e03c-4e8e-b4d5-7fdaa9f3eeb6}</Project>
-      <Name>ExcelReader</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="settings.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Excel2Xps\Excel2Xps.csproj">
+      <Project>{73173d63-74cb-4681-8736-21932825479f}</Project>
+      <Name>Excel2Xps</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

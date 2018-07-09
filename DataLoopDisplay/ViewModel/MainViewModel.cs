@@ -1,6 +1,5 @@
 using GalaSoft.MvvmLight;
 using System.Data;
-using ExcelReader;
 using System.IO;
 using System.Windows;
 using System.Collections.Generic;
@@ -12,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DataLoopDisplay.Views;
+using System.Windows.Xps.Packaging;
+using System.Windows.Documents;
+
 namespace DataLoopDisplay.ViewModel
 {
 
@@ -45,13 +47,11 @@ namespace DataLoopDisplay.ViewModel
 
             if (IsInDesignMode)
             {
-                //this.DataTableToDisplay = this.createFakeDatatable();
-                //this.ImageFileName = @"C:\Users\LeiYang\Downloads\j01.jpg";
+                
             }
             else
             {
-                //this.allrowsDataTable = this.ReadExcelToDataTable();
-                //this.ImageFileName = @"C:\Users\LeiYang\Downloads\j01.jpg";
+               
                 this.LoopViewExcel(this.excelFileName);
             }
             //this.StartTimerShow();
@@ -68,30 +68,27 @@ namespace DataLoopDisplay.ViewModel
 
         public async Task LoopViewExcel(string excelFileName)
         {
-            string jpg = null;
             await Task.Run(() =>
             {
                 this.Message = $"正在转换{excelFileName}...";
                 string tempFolder = this.GetTemporaryDirectory();
                 string tempExcelFile = Path.Combine(tempFolder, Path.GetFileName(excelFileName));
                 File.Copy(excelFileName, tempExcelFile);
-                string pdf = Excel2Pdf.Convert(tempExcelFile);
-                this.Message = $"正在转换{pdf}...";
-                jpg = Pdf2Jpg.Convert(pdf);
-                this.Message = $"正在显示{jpg}...";
-                this.ImageFileName = jpg;
-                //if (App.Current != null)//walkaround
-                //    App.Current.Dispatcher.BeginInvoke(new Action(
-                //        () =>
-                //        {
-                //            this.SetMovieSource(jpg);
-                //        }));
-                this.Message = $"当前显示{excelFileName}！";
-                BitmapImage bmp = new BitmapImage(new Uri(this.ImageFileName));
-                
-                MainWindow.mainWindow.ucTableDisplay.Animate(bmp.Height);
-            });
+                string xps = ExcelToXpsConverter.Convert(tempExcelFile);
 
+                this.Message = $"正在显示{xps}...";
+                //this.ImageFileName = jpg;
+                if (App.Current != null)//walkaround
+                    App.Current.Dispatcher.BeginInvoke(new Action(
+                        () =>
+                        {
+                            XpsDocument xpsDocument = new XpsDocument(xps, FileAccess.Read);
+                            FixedDocumentSequence fds = xpsDocument.GetFixedDocumentSequence();
+                            MainWindow.mainWindow.docViewer.Document = fds;
+                            this.Message = $"当前显示{excelFileName}！";
+                        }));
+                this.Message = $"正在加载{xps}！";
+            });
         }
 
 

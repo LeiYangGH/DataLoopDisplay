@@ -4,7 +4,7 @@ if not defined msg (echo "msg" not defined ) else (
 git add .
 git commit -m "%msg%"
 echo 'pushing...'
-git push origin pdfjpg
+git push origin xps
 echo 'end'
 )
 pause

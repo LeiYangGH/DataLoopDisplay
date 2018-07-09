@@ -15,15 +15,13 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <view:UCTableDisplay x:Name="ucTableDisplay" DataContext="{Binding}"
-                              />
-
+        <DocumentViewer x:Name="docViewer"/>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Slider Visibility="Hidden" Name="sliderFontSize" 
+            <Slider Name="sliderFontSize" 
                                 Minimum="8" Maximum="72" MinHeight="15"
                                 HorizontalAlignment="Stretch"  VerticalAlignment="Center"
                                 Value="{Binding DisplayFontSize,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"></Slider>
