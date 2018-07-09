@@ -84,6 +84,7 @@ namespace DataLoopDisplay.ViewModel
                             XpsDocument xpsDocument = new XpsDocument(xps, FileAccess.Read);
                             FixedDocumentSequence fds = xpsDocument.GetFixedDocumentSequence();
                             MainWindow.mainWindow.docViewer.Document = fds;
+                            MainWindow.mainWindow.docViewer.FitToWidth();
                             this.Message = $"当前显示{excelFileName}！";
                         }));
                 this.Message = $"正在加载{xps}！";
