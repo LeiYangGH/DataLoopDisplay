@@ -35,7 +35,6 @@ namespace DataLoopDisplay.ViewModel
         private SettingsReader settingsReader = new SettingsReader();
         private string excelFileName;
         private TimeSpan secondsPerDown;
-        private int heightPerDown;
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
         /// <summary>
@@ -45,7 +44,6 @@ namespace DataLoopDisplay.ViewModel
         {
             this.excelFileName = this.settingsReader.GetExcelFileName();
             this.secondsPerDown = this.settingsReader.GetSecondsPerDown();
-            this.heightPerDown = this.settingsReader.GetHeightPerDown();
 
             if (IsInDesignMode)
             {
@@ -55,7 +53,6 @@ namespace DataLoopDisplay.ViewModel
             {
                 this.ConvertAndShowExcel(this.excelFileName);
             }
-            this.StartTimerShow();
             this.CreateFileWatcher(this.excelFileName);
         }
 
@@ -88,6 +85,7 @@ namespace DataLoopDisplay.ViewModel
                             this.Message = $"当前显示{excelFileName}！";
                         }));
                 this.Message = $"正在加载{xps}！";
+                this.StartTimerShow();
             });
         }
 
@@ -122,10 +120,10 @@ namespace DataLoopDisplay.ViewModel
         private void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             var docViewer = MainWindow.mainWindow.docViewer;
-            if (docViewer.VerticalOffset < docViewer.ViewportHeight - this.heightPerDown)
-                docViewer.VerticalOffset += this.heightPerDown;
+            if (docViewer.CanGoToNextPage)
+                docViewer.NextPage();
             else
-                docViewer.VerticalOffset = 0;
+                docViewer.FirstPage();
         }
 
 

@@ -66,20 +66,8 @@ namespace DataLoopDisplay
 
         public TimeSpan GetSecondsPerDown()
         {
-            return TimeSpan.FromSeconds(this.GetValueAsIntFromKey(Constants.Settings_Key_SecondsPerDown));
+            return TimeSpan.FromSeconds(this.GetValueAsIntFromKey(Constants.Settings_Key_SecondsPerPage));
         }
-
-        public int GetHeightPerDown()
-        {
-            return this.GetValueAsIntFromKey(Constants.Settings_Key_HeightPerDown);
-        }
-
-
-
-
-
-
-
 
     }
 }
