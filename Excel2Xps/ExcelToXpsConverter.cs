@@ -17,6 +17,7 @@ namespace ExcelPdfJpg
             try
             {
                 var excelApp = new Excel.Application();
+		excelApp.DisplayAlerts = false;
                 Excel.Workbook xlWorkbook = excelApp.Workbooks.Open(excelFileName);
                 Excel.Worksheet xlWorksheet = xlWorkbook.Worksheets[1];
                 int pagesCount = xlWorksheet.PageSetup.Pages.Count;
